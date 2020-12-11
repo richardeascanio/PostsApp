@@ -1,6 +1,7 @@
 package com.richard.postsapp.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -24,6 +25,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class PostsFragment : Fragment(R.layout.posts_fragment), View.OnClickListener {
 
+    private val TAG = "POST_FRAGMENT"
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var fab: FloatingActionButton
@@ -41,7 +44,7 @@ class PostsFragment : Fragment(R.layout.posts_fragment), View.OnClickListener {
 
         fab.setOnClickListener(this)
         subscribeObservers()
-        viewModel.setStateEvent(MainStateEvent.GetPostEvents)
+        viewModel.getPosts()
     }
 
     private fun setupRecyclerView() = recyclerView.apply {
@@ -51,6 +54,7 @@ class PostsFragment : Fragment(R.layout.posts_fragment), View.OnClickListener {
     }
 
     private fun subscribeObservers() {
+
         viewModel.dataState.observe(viewLifecycleOwner) { dataState ->
             when(dataState) {
                 is DataState.Success<List<Post>> -> {
@@ -66,6 +70,20 @@ class PostsFragment : Fragment(R.layout.posts_fragment), View.OnClickListener {
                 }
             }
         }
+
+        viewModel.currentPosts.observe(
+                viewLifecycleOwner,
+                { list ->
+                    when (list.size) {
+                        0 -> {
+                            Toast.makeText(requireContext(), "No posts", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            postAdapter.submitList(list)
+                        }
+                    }
+                },
+        )
     }
 
     private fun displayError(message: String?) {

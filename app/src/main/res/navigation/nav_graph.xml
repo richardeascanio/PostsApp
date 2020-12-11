@@ -10,10 +10,17 @@
         android:label="PostsFragment" >
         <action
             android:id="@+id/action_postsFragment_to_addFragment"
-            app:destination="@id/addFragment" />
+            app:destination="@id/addFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
         android:name="com.richard.postsapp.ui.fragments.AddFragment"
-        android:label="AddFragment" />
+        android:label="AddFragment" >
+        <action
+            android:id="@+id/action_addFragment_to_postsFragment"
+            app:destination="@id/postsFragment"
+            app:popUpTo="@id/addFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
